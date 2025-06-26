@@ -2,8 +2,11 @@ package maquina;
 
 import java.util.HashMap;
 import java.util.Stack;
+import java.util.Scanner;
 
 public class SamInterpreter {
+    //scanner para instruções de READ
+    private static final Scanner scanner = new Scanner(System.in);
     // Pilha de operações
     private Stack<Integer> stack;
     
@@ -19,6 +22,7 @@ public class SamInterpreter {
     private int heapPointer; // Aponta para o próximo endereço livre na heap
     private int[] heapMemory; // Registra alocações (endereço -> tamanho)
     private int framePointer; //funciona como o FBR da maquina
+    private boolean halt; //registrador HALT
     
     public SamInterpreter(String[] program, int heapSize) {
         this.stack = new Stack<>();
@@ -28,10 +32,11 @@ public class SamInterpreter {
         this.heapPointer = 0;
         this.heapMemory = new int[heapSize];
         this.framePointer = 0;
+        this.halt = false;
     }
     
     public void execute() {
-        while (pc < program.length) {
+        while (pc < program.length && !halt) {
             String instruction = program[pc];
             processInstruction(instruction);
             pc++;
@@ -336,31 +341,69 @@ public class SamInterpreter {
                
             case "POPFBR":
                a = stack.pop();
-               framePointer = a;   
+               framePointer = a; 
+               break;
+               
+            case "LINK":
+                stack.push(framePointer);
+                framePointer = stack.size() - 1;
+                break;  
+                
+            case "STOP":
+               halt = true;
+               break;
+                    
 
 
             //operações de controle:    
                 
-            case "JMP":
+            case "JUMP":
                 int target = Integer.parseInt(parts[1]);
                 pc = target - 1; // -1 porque pc++ vai acontecer depois
                 break;
-                
-            case "JMPZ":
+
+            case "JUMPC":
                 target = Integer.parseInt(parts[1]);
-                value = stack.pop();
-                if (value == 0) {
-                    pc = target - 1;
+                a = stack.pop();
+                if(a != 0){
+                  pc = target - 1;
                 }
-                break;
+                break;   
                 
-            case "JMPNZ":
-                target = Integer.parseInt(parts[1]);
-                value = stack.pop();
-                if (value != 0) {
-                    pc = target - 1;
-                }
-                break;
+            case "JUMPIND":
+               if (stack.isEmpty()) {
+                  throw new RuntimeException("Stack underflow in JUMPIND");
+               }
+               a = stack.pop();
+               if (a < 0 || a >= program.length) {
+                  throw new RuntimeException("Invalid jump target in JUMPIND: " + a);
+               }
+               pc = a - 1; // -1 porque o pc++ ocorre após a instrução
+               break;
+
+            case "JSR":
+               stack.push(pc + 1);
+               target = Integer.parseInt(parts[1]);
+               pc = target - 1;
+               break;
+               
+            case "JSRIND":
+               if (stack.isEmpty()){
+                  throw new RuntimeException("Stack underflow in JSRIND");
+               } 
+               target = stack.pop();
+               stack.push(pc + 1);
+               if(target < 0 || target >= program.length){
+                  throw new RuntimeException("Invalid jump target in JSRIND: " + target);
+               }  
+               pc = target - 1;
+               break;
+
+            case "SKIP":
+               a = stack.pop();
+               pc = pc + a;
+               break;   
+
 
             //operações de I/O:    
                 
@@ -368,6 +411,40 @@ public class SamInterpreter {
                 System.out.println(stack.peek());
                 break;
                 
+            case "READ":
+                System.out.print("Digite um número: ");
+                int input = scanner.nextInt();
+                stack.push(input);
+                break;
+
+            case "READC":
+               System.out.print("Digite um caractere: ");
+               char c = scanner.next().charAt(0);
+               stack.push((int) c);
+               break;
+
+            case "READF":
+               System.out.print("Digite um float: ");
+               float f = scanner.nextFloat();
+               stack.push((int) f);
+               break;
+
+
+            case "PRINTLN":
+               System.out.println(stack.peek());
+               break;
+
+            case "PRINTC":
+               System.out.print((char) stack.peek().intValue());
+               break;
+
+            case "DUMP":
+               System.out.println("Stack: " + stack);
+               break;
+   
+   
+    
+
             default:
                 throw new RuntimeException("Instrução desconhecida: " + op);
         }
@@ -376,15 +453,13 @@ public class SamInterpreter {
     public static void main(String[] args) {
         // Exemplo de programa SaM
         String[] program = {
-            "PUSH 10",
-            "PRINT",
-            "PUSH 2",
-            "PRINT",
-            "ADD",
-            "PRINT",
             "PUSH 4",
-            "DIV",
+            "JUMPIND",
+            "PUSH 99",
+            "PRINT",
+            "PUSH 123",
             "PRINT"
+
         };
         
         SamInterpreter interpreter = new SamInterpreter(program, 1024);
