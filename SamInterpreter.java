@@ -18,14 +18,16 @@ public class SamInterpreter {
 
     private int heapPointer; // Aponta para o próximo endereço livre na heap
     private int[] heapMemory; // Registra alocações (endereço -> tamanho)
+    private int framePointer; //funciona como o FBR da maquina
     
-    public SamInterpreter(String[] program) {
+    public SamInterpreter(String[] program, int heapSize) {
         this.stack = new Stack<>();
         this.symbolTable = new HashMap<>();
         this.program = program;
         this.pc = 0;
         this.heapPointer = 0;
-        this.heapMemory = new int[1];
+        this.heapMemory = new int[heapSize];
+        this.framePointer = 0;
     }
     
     public void execute() {
@@ -147,13 +149,13 @@ public class SamInterpreter {
             case "GREATER":
                a = stack.pop();
                b = stack.pop();
-               stack.push(a > b ? 1:0);
+               stack.push(b > a ? 1:0);
                break;
 
             case "LESS":
                a = stack.pop();
                b = stack.pop();
-               stack.push(a < b ? 1:0);
+               stack.push(b < a ? 1:0);
                break;
 
             case "EQUAL":
@@ -180,13 +182,14 @@ public class SamInterpreter {
             case "CMP":
                a = stack.pop();
                b = stack.pop();
-               if(a < b){
+               if(b < a){
                 stack.push(-1);
                }else if(a == b){
                 stack.push(0);
                }else{
                 stack.push(1);
-               }   
+               }
+               break;   
             
 
             //operações de manipulação de pilha: 
@@ -301,9 +304,40 @@ public class SamInterpreter {
                 }
                 break;
 
+            case "PUSHOFF":
+               int offsetPush = Integer.parseInt(parts[1]);
+               int valuePush = stack.get(framePointer  + offsetPush);
+               stack.push(valuePush);
+               break;
+               
+            case "STOREOFF":
+            int offsetStore = Integer.parseInt(parts[1]);
+               a = stack.pop();
+               int storeAddress = stack.get(framePointer + offsetStore);
+               stack.set(storeAddress, a);  
+               break;
+
             //instruções de manipulação de registradores:
 
-            case "PUSHSP":    
+            case "PUSHSP":
+               stack.push(stack.size());
+               break;
+               
+            case "POPSP":
+               int newTop = stack.pop();
+               while(stack.size() > newTop){
+                stack.pop();
+               }
+               break;
+
+            case "PUSHFBR":
+               stack.push(framePointer);
+               break;
+               
+            case "POPFBR":
+               a = stack.pop();
+               framePointer = a;   
+
 
             //operações de controle:    
                 
@@ -342,17 +376,18 @@ public class SamInterpreter {
     public static void main(String[] args) {
         // Exemplo de programa SaM
         String[] program = {
-            "PUSH 5",
-            "PUSH 3",
-            "ADD",
-            "STORE x",
             "PUSH 10",
-            "LOAD x",
-            "MUL",
+            "PRINT",
+            "PUSH 2",
+            "PRINT",
+            "ADD",
+            "PRINT",
+            "PUSH 4",
+            "DIV",
             "PRINT"
         };
         
-        SamInterpreter interpreter = new SamInterpreter(program);
+        SamInterpreter interpreter = new SamInterpreter(program, 1024);
         interpreter.execute();
     }
 }
