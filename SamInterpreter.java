@@ -195,8 +195,6 @@ public class SamInterpreter {
                 stack.push(1);
                }
                break;   
-            
-
             //operações de manipulação de pilha: 
             
             case "PUSH":
@@ -352,9 +350,6 @@ public class SamInterpreter {
             case "STOP":
                halt = true;
                break;
-                    
-
-
             //operações de controle:    
                 
             case "JUMP":
@@ -403,8 +398,6 @@ public class SamInterpreter {
                a = stack.pop();
                pc = pc + a;
                break;   
-
-
             //operações de I/O:    
                 
             case "PRINT":
@@ -442,9 +435,6 @@ public class SamInterpreter {
                System.out.println("Stack: " + stack);
                break;
    
-   
-    
-
             default:
                 throw new RuntimeException("Instrução desconhecida: " + op);
         }
