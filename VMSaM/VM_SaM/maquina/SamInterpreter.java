@@ -52,48 +52,9 @@ public class SamInterpreter {
     
     
     public static void main(String[] args) {
-        // Exemplo de programa SaM
-        String[] program = {
-            "ADDSP 1",
-            "PRINT",
-            "PUSH 2",
-            "PRINT",
-            "STOREOFF 0",
-            "PRINT",
-            "PUSH 0",
-            "PRINT",
-            "PUSHOFF 0",
-            "PRINT",
-            "label_while:",
-            "PRINT",
-            "PUSHOFF 0",
-            "PRINT",
-            "LINK",
-            "PRINT",
-            "JSR funcao",
-            "PRINT",
-            "POPFBR",
-            "PRINT",
-            "ADDSP -1",
-            "STOREOFF 0",
-            "PRINT",
-            "ADDSP -1",
-            "PRINT",
-            "STOREOFF 0",
-            "PRINT",
-            "ADDSP -1",
-            "HALT",
-            "funcao:",
-            "PRINT",
-            "PUSHOFF -1",
-            "PRINT",
-            "PUSH 1",
-            "PRINT",
-            "ADD",
-            "STOREOFF -2",
-            "JUMPIND",
-
-        };
+        try{
+        List<String> lines = Files.readAllLines(Paths.get("maquina/programa.txt"));
+        String[] program = lines.toArray(new String[0]);
         
         SamInterpreter interpreter = new SamInterpreter(program, 1024);
         Arithmetic_Logic al = new Arithmetic_Logic();
@@ -102,5 +63,8 @@ public class SamInterpreter {
         StackManip sm = new StackManip();
         Control con = new Control();
         interpreter.execute(io, al, rm, sm, con);
+        } catch (IOException e) {
+            System.err.println("Erro ao ler o arquivo: " + e.getMessage());
+        }
     }
 }
