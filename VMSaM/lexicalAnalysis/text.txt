@@ -1,0 +1,18 @@
+xaropinho n;
+xaropinho y;
+n = 2;
+y = 8;
+n + y;
+
+ratinho (y <= 15) {
+    n = y + 1;
+}
+ratinho (nananinanao y) {
+   uepa;
+}
+
+uepa (y > n) {
+    n = y;
+}   ui(y < n){
+    y = n;
+}
