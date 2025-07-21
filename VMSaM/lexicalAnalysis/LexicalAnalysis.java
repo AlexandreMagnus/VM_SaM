@@ -16,7 +16,7 @@ public class LexicalAnalysis {
         KEYWORDS.put("cavalo", "CONTINUE");
         KEYWORDS.put("e", "AND");
         KEYWORDS.put("ou", "OR");
-        KEYWORDS.put("nananinanao", "NOT");
+        KEYWORDS.put("danca", "NOT");
         KEYWORDS.put("letra", "CHAR");
         KEYWORDS.put("rapaz", "FUN");
         KEYWORDS.put("xaropinho", "INT");
@@ -32,7 +32,8 @@ public class LexicalAnalysis {
             { "DELIMITER", "[(){};,]" },
             { "WHITESPACE", "[ \\t]+" },
             { "NEWLINE", "\\n" },
-            { "UNKNOWN", "." }
+            { "UNKNOWN", "." },
+            { "COMMENT", "#.*"}
     };
 
     private static Pattern buildRegex() {
