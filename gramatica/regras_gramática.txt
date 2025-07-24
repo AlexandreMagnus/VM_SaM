@@ -1,0 +1,72 @@
+
+#programa
+S → statement*
+statement → declaration | if_statement | while_loop 
+          | function_decl | return_stmt | break_stmt |
+          continue_stmt | block | IDENTIFIER identifier_stmt_tail
+identifier_stmt_tail → "=" expression ";" 
+                     | "(" args_opt ")" ";"
+
+# Declarações
+declaration → type IDENTIFIER declaration_tail
+declaration_tail → "=" expression ";" | ";"
+type → "xaropinho" | "xarope" | "letra"
+
+# Expressões
+expression → logical_or
+logical_or → logical_and logical_or_tail
+logical_or_tail → "ou" logical_and logical_or_tail | ε
+logical_and → equality logical_and_tail
+logical_and_tail → "e" equality logical_and_tail   | ε
+equality → comparison equality_tail
+equality_tail → "==" comparison equality_tail | "!=" comparison equality_tail 
+              | ε 
+comparison → term comparison_tail
+comparison_tail → ">" term comparison_tail 
+                | ">=" term comparison_tail 
+                | "<" term comparison_tail 
+                | "<=" term comparison_tail 
+                | ε
+term → factor term_tail
+term_tail → "+" factor term_tail 
+          | "-" factor term_tail 
+          | ε
+factor → unary factor_tail
+factor_tail → "*" unary factor_tail 
+            | "/" unary factor_tail 
+            | "%" unary factor_tail 
+            | ε
+unary → ("danca" | "-") unary | primary
+primary → NUMBER | REALNUMBER | IDENTIFIER primary_tail | "(" expression ")"
+primary_tail → "(" args_opt ")" 
+             | ε
+
+# Argumentos para chamadas de função
+args_opt → args | ε
+args → expression args_tail
+args_tail → "," expression args_tail 
+          | ε
+
+# Estruturas de controle
+if_statement → "uepa" "(" expression ")" "shi" block if_tail
+if_tail → "ui" statement 
+         | ε
+while_loop → "ratinho" "(" expression ")" block
+break_stmt → "pare" ";"
+continue_stmt → "cavalo" ";"
+
+# Funções
+function_decl → "rapaz" IDENTIFIER "(" params_opt ")" block
+params_opt → params 
+            | ε
+params → param params_tail
+params_tail → "," param params_tail 
+          | ε
+param → type IDENTIFIER
+
+# Blocos e comandos de retorno
+block → "{" statements "}"
+statements → statement statements 
+           | ε
+return_stmt → "volta" expression_opt ";"
+expression_opt → expression | ε
