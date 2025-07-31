@@ -18,6 +18,10 @@ public class FirstFollowCalculator {
         computeFirstSets();
         computeFollowSets();
     }
+    
+    public String getStartSymbol() {
+        return startSymbol;
+    }
 
     // Encontra todos os terminais na gramática
     private Set<String> findTerminals() {
@@ -60,29 +64,29 @@ public class FirstFollowCalculator {
         boolean allCanDeriveEpsilon = true;
 
         for (String symbol : sequence) {
-            //Caso 1: símbolo vazio
+            // Caso 1: símbolo vazio
             if (symbol.equals("ε")) {
                 result.add("ε");
                 break;
             }
-            //Caso 2: terminal
+            // Caso 2: terminal
             if (terminals.contains(symbol)) {
                 result.add(symbol);
                 allCanDeriveEpsilon = false;
                 break;
             }
-            //Caso 3: não terminal
+            // Caso 3: não terminal
             Set<String> firstOfSymbol = firstSets.get(symbol);
             result.addAll(firstOfSymbol.stream()
-                .filter(s -> !s.equals("ε"))
-                .collect(Collectors.toSet()));
+                    .filter(s -> !s.equals("ε"))
+                    .collect(Collectors.toSet()));
 
             if (!firstOfSymbol.contains("ε")) {
                 allCanDeriveEpsilon = false;
                 break;
             }
         }
-        //Se todos os símbolos da direita podem derivar vazio,
+        // Se todos os símbolos da direita podem derivar vazio,
         // vazio faz parte do first do não-terminal da direita
         if (allCanDeriveEpsilon) {
             result.add("ε");
@@ -112,9 +116,9 @@ public class FirstFollowCalculator {
 
                             // Adiciona FIRST(remaining) - {ε} ao FOLLOW(symbol)
                             Set<String> toAdd = firstOfRemaining.stream()
-                                .filter(s -> !s.equals("ε"))
-                                .collect(Collectors.toSet());
-                            
+                                    .filter(s -> !s.equals("ε"))
+                                    .collect(Collectors.toSet());
+
                             if (followSets.get(symbol).addAll(toAdd)) {
                                 changed = true;
                             }
@@ -133,10 +137,21 @@ public class FirstFollowCalculator {
     }
 
     // Getters
-    public Map<String, Set<String>> getFirstSets() { return firstSets; }
-    public Map<String, Set<String>> getFollowSets() { return followSets; }
-    public Set<String> getTerminals() { return terminals; }
-    public Set<String> getNonTerminals() { return nonTerminals; }
+    public Map<String, Set<String>> getFirstSets() {
+        return firstSets;
+    }
+
+    public Map<String, Set<String>> getFollowSets() {
+        return followSets;
+    }
+
+    public Set<String> getTerminals() {
+        return terminals;
+    }
+
+    public Set<String> getNonTerminals() {
+        return nonTerminals;
+    }
 
     // Métodos de visualização
     public void printFirstSets() {
