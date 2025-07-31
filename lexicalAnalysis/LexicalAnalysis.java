@@ -84,7 +84,7 @@ public class LexicalAnalysis {
 
         grammar.put("S", Arrays.asList(
                 Arrays.asList("statement", "S"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("statement", Arrays.asList(
                 Arrays.asList("declaration"),
@@ -95,12 +95,11 @@ public class LexicalAnalysis {
                 Arrays.asList("break_stmt"),
                 Arrays.asList("continue_stmt"),
                 Arrays.asList("block"),
-                Arrays.asList("IDENTIFIER", "identifier_stmt_tail")));
+                Arrays.asList("expression", ";")
+        ));
 
-        grammar.put("identifier_stmt_tail", Arrays.asList(
-                Arrays.asList("=", "expression", ";"),
-                Arrays.asList("(", "args_opt", ")", ";")));
 
+        
         grammar.put("declaration", Arrays.asList(
                 Arrays.asList("type", "IDENTIFIER", "declaration_tail")));
 
@@ -113,22 +112,33 @@ public class LexicalAnalysis {
                 Arrays.asList("xarope"),
                 Arrays.asList("letra")));
 
-        grammar.put("expression", Arrays.asList(
-                Arrays.asList("logical_or")));
+       grammar.put("expression", Arrays.asList(
+               Arrays.asList("assignment")
+        ));
+
+        grammar.put("assignment", Arrays.asList(
+               Arrays.asList("IDENTIFIER", "assignment_tail"),
+               Arrays.asList("logical_or")
+        ));
+
+        grammar.put("assignment_tail", Arrays.asList(
+               Arrays.asList("=", "expression"),
+               Collections.emptyList()
+               ));
+
 
         grammar.put("logical_or", Arrays.asList(
                 Arrays.asList("logical_and", "logical_or_tail")));
 
         grammar.put("logical_or_tail", Arrays.asList(
                 Arrays.asList("ou", "logical_and", "logical_or_tail"),
-                Arrays.asList("ε")));
-
+                Collections.emptyList()));
         grammar.put("logical_and", Arrays.asList(
                 Arrays.asList("equality", "logical_and_tail")));
 
         grammar.put("logical_and_tail", Arrays.asList(
                 Arrays.asList("e", "equality", "logical_and_tail"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("equality", Arrays.asList(
                 Arrays.asList("comparison", "equality_tail")));
@@ -136,7 +146,7 @@ public class LexicalAnalysis {
         grammar.put("equality_tail", Arrays.asList(
                 Arrays.asList("==", "comparison", "equality_tail"),
                 Arrays.asList("!=", "comparison", "equality_tail"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("comparison", Arrays.asList(
                 Arrays.asList("term", "comparison_tail")));
@@ -146,7 +156,7 @@ public class LexicalAnalysis {
                 Arrays.asList(">=", "term", "comparison_tail"),
                 Arrays.asList("<", "term", "comparison_tail"),
                 Arrays.asList("<=", "term", "comparison_tail"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("term", Arrays.asList(
                 Arrays.asList("factor", "term_tail")));
@@ -154,7 +164,7 @@ public class LexicalAnalysis {
         grammar.put("term_tail", Arrays.asList(
                 Arrays.asList("+", "factor", "term_tail"),
                 Arrays.asList("-", "factor", "term_tail"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("factor", Arrays.asList(
                 Arrays.asList("unary", "factor_tail")));
@@ -163,7 +173,7 @@ public class LexicalAnalysis {
                 Arrays.asList("*", "unary", "factor_tail"),
                 Arrays.asList("/", "unary", "factor_tail"),
                 Arrays.asList("%", "unary", "factor_tail"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("unary", Arrays.asList(
                 Arrays.asList("danca", "unary"),
@@ -173,30 +183,36 @@ public class LexicalAnalysis {
         grammar.put("primary", Arrays.asList(
                 Arrays.asList("NUMBER"),
                 Arrays.asList("REALNUMBER"),
-                Arrays.asList("IDENTIFIER", "primary_tail"),
+                Arrays.asList("function_call"), 
+                Arrays.asList("IDENTIFIER"),   
                 Arrays.asList("(", "expression", ")")));
+
+        grammar.put("function_call", Arrays.asList(
+                Arrays.asList("IDENTIFIER", "(", "args_opt", ")")
+        ));
+        
 
         grammar.put("primary_tail", Arrays.asList(
                 Arrays.asList("(", "args_opt", ")"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("args_opt", Arrays.asList(
                 Arrays.asList("args"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("args", Arrays.asList(
                 Arrays.asList("expression", "args_tail")));
 
         grammar.put("args_tail", Arrays.asList(
                 Arrays.asList(",", "expression", "args_tail"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("if_statement", Arrays.asList(
                 Arrays.asList("uepa", "(", "expression", ")", "shi", "block", "if_tail")));
 
         grammar.put("if_tail", Arrays.asList(
                 Arrays.asList("ui", "statement"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("while_loop", Arrays.asList(
                 Arrays.asList("ratinho", "(", "expression", ")", "block")));
@@ -212,14 +228,14 @@ public class LexicalAnalysis {
 
         grammar.put("params_opt", Arrays.asList(
                 Arrays.asList("params"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("params", Arrays.asList(
                 Arrays.asList("param", "params_tail")));
 
         grammar.put("params_tail", Arrays.asList(
                 Arrays.asList(",", "param", "params_tail"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("param", Arrays.asList(
                 Arrays.asList("type", "IDENTIFIER")));
@@ -229,14 +245,14 @@ public class LexicalAnalysis {
 
         grammar.put("statements", Arrays.asList(
                 Arrays.asList("statement", "statements"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         grammar.put("return_stmt", Arrays.asList(
                 Arrays.asList("volta", "expression_opt", ";")));
 
         grammar.put("expression_opt", Arrays.asList(
                 Arrays.asList("expression"),
-                Arrays.asList("ε")));
+                Collections.emptyList()));
 
         return grammar;
     }
