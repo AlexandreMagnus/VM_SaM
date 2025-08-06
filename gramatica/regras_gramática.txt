@@ -1,0 +1,97 @@
+#programa
+S → statement*
+
+# Statements
+statement → declaration 
+          | if_statement 
+          | while_loop 
+          | function_decl 
+          | return_stmt 
+          | break_stmt
+          | continue_stmt 
+          | block  
+          | IDENTIFIER assignment_or_call 
+          | non_id_expression ";"
+
+# Atribuição ou chamada
+assignment_or_call → "=" expression ";"  # Atribuição
+                   | "(" args_opt ")" ";" # Chamada
+                   | ";"                 # Expressão vazia
+
+# Expressões que não começam com ID
+non_id_expression → literal_expression
+                  | parenthesized_expression
+                  | unary_expression
+                  | binary_expression
+
+literal_expression → NUMBER | REALNUMBER
+
+parenthesized_expression → "(" expression ")"
+
+unary_expression → unary_operator primary
+
+binary_expression → primary binary_operator expression
+
+simple_expression → NUMBER
+                  | REALNUMBER
+                  | primary binary_operator expression
+
+# Declarações
+declaration → type IDENTIFIER declaration_tail
+declaration_tail → "=" expression ";" | ";"
+type → "xaropinho" | "xarope" | "letra"
+
+# Hierarquia de expressões
+expression → logical_or
+logical_or → logical_and logical_or_tail
+logical_or_tail → "ou" logical_and logical_or_tail | ε
+logical_and → equality logical_and_tail
+logical_and_tail → "e" equality logical_and_tail | ε
+equality → comparison equality_tail
+equality_tail → "==" comparison equality_tail | "!=" comparison equality_tail | ε 
+comparison → term comparison_tail
+comparison_tail → ">" term comparison_tail 
+                | ">=" term comparison_tail 
+                | "<" term comparison_tail 
+                | "<=" term comparison_tail 
+                | ε
+term → factor term_tail
+term_tail → "+" factor term_tail 
+          | "-" factor term_tail 
+          | ε
+factor → unary factor_tail
+factor_tail → "*" unary factor_tail 
+            | "/" unary factor_tail 
+            | "%" unary factor_tail 
+            | ε
+unary → ("danca" | "-") unary | primary
+primary → NUMBER 
+         | REALNUMBER 
+         | IDENTIFIER primary_tail 
+         | "(" expression ")"
+primary_tail → "(" args_opt ")" | ε
+
+# Funções e argumentos
+args_opt → args | ε
+args → expression args_tail
+args_tail → "," expression args_tail | ε
+
+# Controle de fluxo
+if_statement → "uepa" "(" expression ")" "shi" block if_tail
+if_tail → "ui" statement | ε
+while_loop → "ratinho" "(" expression ")" block
+break_stmt → "pare" ";"
+continue_stmt → "cavalo" ";"
+
+# Declaração de funções
+function_decl → "rapaz" IDENTIFIER "(" params_opt ")" block
+params_opt → params | ε
+params → param params_tail
+params_tail → "," param params_tail | ε
+param → type IDENTIFIER
+
+# Blocos e retorno
+block → "{" statements "}"
+statements → statement statements | ε
+return_stmt → "volta" expression_opt ";"
+expression_opt → expression | ε
